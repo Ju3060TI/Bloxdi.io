@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Bloxdi.io – Episches Voxel-Survival-Spiel im Browser" />
+  <title>Bloxdi.io</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Lade-Screen -->
+    <div id="loading-screen" class="screen active">
+      <div class="loading-box">
+        <h1 class="logo">🔥 BLOXDI.IO</h1>
+        <p class="loading-title">⏳ BLOXDI.IO LÄDT...</p>
+        <div class="progress-bar-wrap">
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="progress-percent" class="progress-percent">0%</p>
+        <p id="progress-status" class="progress-status">Initialisiere Three.js & WebGL...</p>
+        <p id="loading-tip" class="loading-tip">💡 Tipp: Mit Shift schleichen!</p>
+        <p id="loading-error" class="loading-error" hidden></p>
+        <div class="loading-anim">
+          <span class="cube-spin"></span>
+          <span class="cube-spin delay"></span>
+          <span class="cube-spin delay2"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hauptmenü -->
+    <div id="main-menu" class="screen">
+      <div class="menu-panel">
+        <h1 class="logo">BLOXDI.IO</h1>
+        <p class="subtitle">Das epischste Voxel-Spiel</p>
+        <div id="auth-status" class="auth-status"></div>
+        <button id="btn-play" class="menu-btn primary">▶ Spielen</button>
+        <button id="btn-worlds" class="menu-btn">🌍 Welten</button>
+        <button id="btn-marketplace" class="menu-btn">🛒 Community</button>
+        <button id="btn-settings" class="menu-btn">⚙ Einstellungen</button>
+        <button id="btn-auth" class="menu-btn secondary">🔐 Anmelden</button>
+      </div>
+    </div>
+
+    <!-- Welten-Manager -->
+    <div id="worlds-screen" class="screen">
+      <div class="menu-panel wide">
+        <h2>🌍 Meine Welten</h2>
+        <div id="world-list" class="world-list"></div>
+        <div class="world-create">
+          <input id="world-name" type="text" placeholder="Weltname..." maxlength="32" />
+          <select id="world-type">
+            <option value="normal">Normal</option>
+            <option value="flat">Flat</option>
+            <option value="mountains">Berge</option>
+            <option value="realistic">Realistisch</option>
+            <option value="skyblock">Skyblock</option>
+            <option value="oneblock">One Block</option>
+          </select>
+          <input id="world-seed" type="text" placeholder="Seed (optional)" />
+          <button id="btn-create-world" class="menu-btn primary">+ Neue Welt</button>
+        </div>
+        <button id="btn-back-worlds" class="menu-btn">← Zurück</button>
+      </div>
+    </div>
+
+    <!-- Marketplace -->
+    <div id="marketplace-screen" class="screen">
+      <div class="menu-panel wide">
+        <h2>🛒 Community-Welten <span class="free-badge">100% KOSTENLOS</span></h2>
+        <div id="marketplace-list" class="world-list"></div>
+        <button id="btn-back-marketplace" class="menu-btn">← Zurück</button>
+      </div>
+    </div>
+
+    <!-- Einstellungen -->
+    <div id="settings-screen" class="screen">
+      <div class="menu-panel">
+        <h2>⚙ Einstellungen</h2>
+        <label>Render-Distanz <input id="set-render-dist" type="range" min="2" max="8" value="4" /></label>
+        <label>Master-Lautstärke <input id="set-master-vol" type="range" min="0" max="100" value="80" /></label>
+        <label>Musik <input id="set-music-vol" type="range" min="0" max="100" value="60" /></label>
+        <label>Sound <input id="set-sfx-vol" type="range" min="0" max="100" value="80" /></label>
+        <label><input id="set-touch" type="checkbox" /> Touch-Steuerung</label>
+        <div id="keybinds-panel"></div>
+        <button id="btn-back-settings" class="menu-btn">← Zurück</button>
+      </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Anmelden</h2>
+        <button id="btn-google" class="menu-btn">Google Login</button>
+        <input id="auth-email" type="email" placeholder="E-Mail" />
+        <input id="auth-password" type="password" placeholder="Passwort" />
+        <button id="btn-email-login" class="menu-btn">E-Mail Login</button>
+        <button id="btn-email-register" class="menu-btn secondary">Registrieren</button>
+        <button id="btn-offline" class="menu-btn">Offline spielen</button>
+        <button id="btn-close-auth" class="menu-btn">Schließen</button>
+      </div>
+    </div>
+
+    <!-- Spiel -->
+    <div id="game-screen" class="screen">
+      <canvas id="game-canvas"></canvas>
+
+      <!-- HUD -->
+      <div id="hud" class="hud">
+        <div class="hud-hearts" id="hud-hearts"></div>
+        <div class="hud-hunger" id="hud-hunger"></div>
+        <div class="hud-xp">
+          <div id="xp-bar" class="xp-bar"></div>
+          <span id="xp-level">0</span>
+        </div>
+        <div id="hotbar" class="hotbar"></div>
+        <div id="crosshair" class="crosshair">+</div>
+        <div id="break-progress" class="break-progress hidden">
+          <div id="break-bar" class="break-bar"></div>
+        </div>
+        <div id="debug-info" class="debug-info hidden"></div>
+        <div id="achievement-toast" class="achievement-toast hidden"></div>
+      </div>
+
+      <!-- Pause-Menü -->
+      <div id="pause-menu" class="pause-menu hidden">
+        <h2>Spiel pausiert</h2>
+        <button id="btn-resume" class="menu-btn">Fortsetzen</button>
+        <button id="btn-save" class="menu-btn">Speichern</button>
+        <button id="btn-quit" class="menu-btn">Hauptmenü</button>
+      </div>
+
+      <!-- Inventar -->
+      <div id="inventory-panel" class="inventory-panel hidden">
+        <div class="inv-grid" id="inv-main"></div>
+        <div class="inv-crafting" id="inv-crafting"></div>
+        <div class="inv-armor" id="inv-armor"></div>
+      </div>
+
+      <!-- Touch -->
+      <div id="touch-controls" class="touch-controls hidden">
+        <div id="joystick-zone" class="joystick-zone"></div>
+        <div id="look-zone" class="look-zone"></div>
+        <button id="touch-jump" class="touch-btn">⬆</button>
+        <button id="touch-inv" class="touch-btn">🎒</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      if (location.protocol === 'file:') {
+        var e = document.getElementById('loading-error');
+        var s = document.getElementById('progress-status');
+        if (s) s.textContent = 'Bitte lokalen Server starten…';
+        if (e) {
+          e.hidden = false;
+          e.textContent = 'Nicht über file:// öffnen! Im Ordner: npm start → dann http://localhost:3000';
+        }
+      } else {
+        var bar = document.getElementById('progress-bar');
+        var pct = document.getElementById('progress-percent');
+        var st = document.getElementById('progress-status');
+        if (bar) bar.style.width = '3%';
+        if (pct) pct.textContent = '3%';
+        if (st) st.textContent = 'Lade Spiel-Module…';
+      }
+      window.addEventListener('error', function (ev) {
+        var el = document.getElementById('loading-error');
+        if (el) {
+          el.hidden = false;
+          el.textContent = 'Fehler: ' + (ev.message || 'Unbekannt') + ' – Konsole (F12) prüfen.';
+        }
+      });
+    })();
+  </script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

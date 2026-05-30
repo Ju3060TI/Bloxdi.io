@@ -1,0 +1,18 @@
+# Render.com Static Site – Bloxdi.io
+# Dashboard: Build Command LEER | Publish Directory: .
+services:
+  - type: web
+    name: bloxdi-io
+    runtime: static
+    buildCommand: "echo Bloxdi.io ready"
+    staticPublishPath: .
+    headers:
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+      - path: /*.js
+        name: Cache-Control
+        value: public, max-age=3600
+      - path: /*.css
+        name: Cache-Control
+        value: public, max-age=3600

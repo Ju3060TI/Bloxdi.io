@@ -1,0 +1,16 @@
+{
+  "name": "bloxdi-io",
+  "version": "0.4.0",
+  "type": "module",
+  "description": "Episches Voxel-Survival-Spiel im Browser",
+  "scripts": {
+    "start": "npx serve . -l 3000",
+    "dev": "npx serve . -l 3000",
+    "build": "echo Bloxdi.io static site – kein Build-Schritt nötig"
+  },
+  "keywords": ["voxel", "game", "threejs"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
